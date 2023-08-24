@@ -1,0 +1,9 @@
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+  "username": "foo",
+  "password": "bar",
+  "role": "SUPERADMIN",
+  "name": "Foo Bar"
+}
