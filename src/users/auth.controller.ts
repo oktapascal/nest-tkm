@@ -11,6 +11,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() request: CreateUserDto): Promise<JsonResponse> {
+    console.log('Test CI');
     const req: UserCreateRequest = {
       ...request,
     };
