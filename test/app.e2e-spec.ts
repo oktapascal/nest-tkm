@@ -6,8 +6,10 @@ import * as request from 'supertest';
 
 describe('Application e2e Testing', () => {
   let app: INestApplication;
-  // let access_token: string;
-  // let refresh_token: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let access_token: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let refresh_token: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,6 +50,41 @@ describe('Application e2e Testing', () => {
           name: 'Foo Bar',
         })
         .expect(400);
+    });
+  });
+
+  describe('/auth/login', () => {
+    it('user success logged in', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          username: 'foo',
+          password: 'bar',
+        })
+        .expect(200);
+
+      access_token = response.body.access_token;
+      refresh_token = response.body.refresh_token;
+    });
+
+    it('user cannot logged in because username is wrong', () => {
+      return request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          username: 'foo1',
+          password: 'bar',
+        })
+        .expect(404);
+    });
+
+    it('user cannot logged in because password is wrong', () => {
+      return request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          username: 'foo',
+          password: 'ba',
+        })
+        .expect(401);
     });
   });
 });

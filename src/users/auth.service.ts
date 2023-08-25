@@ -1,8 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './users.service';
-import { Tokens, UserCreateRequest } from './models/web';
+import { SessionUserRequest, Tokens, UserCreateRequest } from './models/web';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { verify } from '../common/helpers';
+import { AuthSession } from './models/entities';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
     private readonly userService: UsersService,
+    @InjectDataSource() private readonly datasource: DataSource,
   ) {}
 
   private async generateTokens(id_user: string): Promise<Tokens> {
@@ -49,5 +59,39 @@ export class AuthService {
       ]);
 
     return this.userService.create(request);
+  }
+
+  async handleLogin(request: SessionUserRequest): Promise<Tokens> {
+    // check username is existed or not
+    const user = await this.userService.findByUsername(request.username);
+
+    if (!user)
+      throw new NotFoundException([
+        { field: 'username', error: 'user tidak ditemukan' },
+      ]);
+
+    // compare password encrypt
+    const isVerified = verify(user.password, request.password);
+
+    if (!isVerified)
+      throw new UnauthorizedException([
+        {
+          field: 'password',
+          error: 'password tidak sesuai dengan credential anda',
+        },
+      ]);
+
+    const tokens = this.generateTokens(user.id_user);
+
+    const manager = this.datasource.createEntityManager();
+    const session = manager.create(AuthSession, {
+      user_id: user.id_user,
+      ip_address: request.ip,
+      user_agent: request.agent,
+    });
+
+    await manager.save(session);
+
+    return tokens;
   }
 }
