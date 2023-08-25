@@ -106,4 +106,13 @@ describe('Application e2e Testing', () => {
         .expect(401);
     });
   });
+
+  describe('/auth/logout', () => {
+    it('user can logged out', () => {
+      return request(app.getHttpServer())
+        .patch('/auth/logout')
+        .set('Authorization', `Bearer ${access_token}`)
+        .expect(200);
+    });
+  });
 });
