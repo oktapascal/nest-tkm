@@ -16,10 +16,10 @@ import { ConfigModule } from '@nestjs/config';
     UsersService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: AccessTokenGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AccessTokenGuard,
+    // },
   ],
 })
 export class UsersModule {}

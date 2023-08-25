@@ -18,7 +18,7 @@ export class UsersService {
       .getOne();
   }
 
-  findUserById(user_id: string) {
+  findUserById(user_id: string): Promise<User | null> {
     return this.datasource
       .getRepository(User)
       .createQueryBuilder()
@@ -27,10 +27,12 @@ export class UsersService {
       .getOne();
   }
 
-  create(data: UserCreateRequest) {
+  async create(data: UserCreateRequest) {
+    const password = await hashing(data.password);
+
     const initialize: UserCreateRequest = {
       ...data,
-      password: hashing(data.password),
+      password,
     };
 
     const manager = this.datasource.createEntityManager();
@@ -53,9 +55,9 @@ export class UsersService {
     });
   }
 
-  updateRefreshToken(user_id: string, token?: string) {
+  async updateRefreshToken(user_id: string, token?: string) {
     let hashToken: string | null = null;
-    if (token) hashToken = hashing(token);
+    if (token) hashToken = await hashing(token);
 
     return this.datasource
       .createQueryBuilder()

@@ -1,0 +1,3 @@
+PATCH http://localhost:3001/auth/refresh
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlM2IxOTNkNy03NjE0LTQ0YTYtYjMzZS1hNDFiZWI5YTk4OGQiLCJpYXQiOjE2OTI5MzQ4NzksImV4cCI6MTY5MzUzOTY3OX0.K-DVS9yqXBty4rNnmTleGhupqnBkD78fGoQ8rV-yxdg
