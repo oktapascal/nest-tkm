@@ -21,7 +21,6 @@ export const PgConfig: TypeOrmModuleAsyncOptions = {
     database: config.get<string>('DATABASE_NAME'),
   }),
   dataSourceFactory: async (options) => {
-    console.log(options);
     return await new DataSource(options).initialize();
   },
 };
