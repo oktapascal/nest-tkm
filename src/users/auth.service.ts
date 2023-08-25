@@ -129,4 +129,8 @@ export class AuthService {
 
     return tokens;
   }
+
+  handleLogout(user_id: string) {
+    return this.userService.updateRefreshToken(user_id);
+  }
 }
