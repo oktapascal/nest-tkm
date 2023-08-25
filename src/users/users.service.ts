@@ -14,6 +14,16 @@ export class UsersService {
       .getRepository(User)
       .createQueryBuilder()
       .where('username = :username', { username })
+      .andWhere('activated = true')
+      .getOne();
+  }
+
+  findUserById(user_id: string) {
+    return this.datasource
+      .getRepository(User)
+      .createQueryBuilder()
+      .where('id_user = :user_id', { user_id })
+      .andWhere('activated = true')
       .getOne();
   }
 
