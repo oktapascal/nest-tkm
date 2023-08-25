@@ -52,4 +52,16 @@ export class UsersService {
       await trx.save(profile);
     });
   }
+
+  updateRefreshToken(user_id: string, token?: string) {
+    let hashToken: string | null = null;
+    if (token) hashToken = hashing(token);
+
+    return this.datasource
+      .createQueryBuilder()
+      .update(User)
+      .set({ remember_token: hashToken })
+      .where('id_user = :user_id', { user_id })
+      .execute();
+  }
 }

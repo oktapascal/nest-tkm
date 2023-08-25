@@ -4,7 +4,7 @@ import {
 } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { User, UserProfile } from '../../../users/models/entities';
+import { AuthSession, User, UserProfile } from '../../../users/models/entities';
 
 export const PgConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -13,7 +13,7 @@ export const PgConfig: TypeOrmModuleAsyncOptions = {
     type: 'postgres',
     synchronize: false,
     logging: ['warn', 'error'],
-    entities: [User, UserProfile],
+    entities: [User, UserProfile, AuthSession],
     host: config.get<string>('DATABASE_HOST'),
     port: config.get<number>('DATABASE_PORT'),
     username: config.get<string>('DATABASE_USER'),
