@@ -1,11 +1,11 @@
 import * as bcrypt from 'bcrypt';
 
-export function hashing(data: string): string {
-  const salt: string = bcrypt.genSaltSync(10);
+export async function hashing(data: string): Promise<string> {
+  const salt: string = await bcrypt.genSalt(10);
 
-  return bcrypt.hashSync(data, salt);
+  return bcrypt.hash(data, salt);
 }
 
-export function verify(encrypt: string, data: string): boolean {
+export async function verify(encrypt: string, data: string): Promise<boolean> {
   return bcrypt.compareSync(data, encrypt);
 }
