@@ -87,4 +87,23 @@ describe('Application e2e Testing', () => {
         .expect(401);
     });
   });
+
+  describe('/auth/refresh', () => {
+    it('user can refresh token', () => {
+      return request(app.getHttpServer())
+        .patch('/auth/refresh')
+        .set('Authorization', `Bearer ${refresh_token}`)
+        .expect(200);
+    });
+
+    it('user cannot refresh token because wrong token', () => {
+      return request(app.getHttpServer())
+        .patch('/auth/refresh')
+        .set(
+          'Authorization',
+          `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlM2IxOTNkNy03NjE0LTQ0YTYtYjMzZS1hNDFiZWI5YTk4OGQiLCJpYXQiOjE2OTI5MzIwNjUsImV4cCI6MTY5MjkzMjk2NX0.AzUobA5P-H1LJg38okzCkpL7pU6IJDv940koPt3uKFc`,
+        )
+        .expect(401);
+    });
+  });
 });

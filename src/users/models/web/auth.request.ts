@@ -4,3 +4,8 @@ export interface SessionUserRequest {
   ip: string;
   agent: string | undefined;
 }
+
+export interface RefreshTokenRequest {
+  user_id: string;
+  token: string;
+}

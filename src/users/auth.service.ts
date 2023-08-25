@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,7 +8,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './users.service';
-import { SessionUserRequest, Tokens, UserCreateRequest } from './models/web';
+import {
+  RefreshTokenRequest,
+  SessionUserRequest,
+  Tokens,
+  UserCreateRequest,
+} from './models/web';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { verify } from '../common/helpers';
@@ -71,7 +77,7 @@ export class AuthService {
       ]);
 
     // compare password encrypt
-    const isVerified = verify(user.password, request.password);
+    const isVerified = await verify(user.password, request.password);
 
     if (!isVerified)
       throw new UnauthorizedException([
@@ -81,7 +87,12 @@ export class AuthService {
         },
       ]);
 
-    const tokens = this.generateTokens(user.id_user);
+    const tokens = await this.generateTokens(user.id_user);
+
+    await this.userService.updateRefreshToken(
+      user.id_user,
+      tokens.refresh_token,
+    );
 
     const manager = this.datasource.createEntityManager();
     const session = manager.create(AuthSession, {
@@ -91,6 +102,30 @@ export class AuthService {
     });
 
     await manager.save(session);
+
+    return tokens;
+  }
+
+  async handleRefreshToken(request: RefreshTokenRequest): Promise<Tokens> {
+    // check user by id
+    const user = await this.userService.findUserById(request.user_id);
+
+    if (!user) throw new ForbiddenException('Access Denied');
+
+    if (user.remember_token === null)
+      throw new ForbiddenException('Access Denied');
+
+    // verify refresh token with encrypt refresh token
+    const isVerified = await verify(user.remember_token, request.token);
+
+    if (!isVerified) throw new ForbiddenException('Access Denied');
+
+    const tokens = await this.generateTokens(request.user_id);
+
+    await this.userService.updateRefreshToken(
+      request.user_id,
+      tokens.refresh_token,
+    );
 
     return tokens;
   }
