@@ -79,4 +79,16 @@ export class AuthController {
 
     return this.authService.handleRefreshToken(req);
   }
+
+  @Patch('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@CurrentUser() user: Express.User): Promise<JsonResponse> {
+    console.log(user);
+    await this.authService.handleLogout(user['sub']);
+
+    return {
+      code: HttpStatus.OK,
+      status: 'OK',
+    };
+  }
 }
