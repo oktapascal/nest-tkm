@@ -14,7 +14,7 @@ export class CreateUserDto {
   @IsEnum(Roles, { message: 'Role tidak valid' })
   role: string;
 
-  @IsNotEmpty({ message: 'Username wajib diisi' })
-  @MaxLength(100, { message: 'Username maksimal $constraint1 karakter' })
+  @IsNotEmpty({ message: 'Nama lengkap wajib diisi' })
+  @MaxLength(100, { message: 'Nama lengkap maksimal $constraint1 karakter' })
   name: string;
 }
