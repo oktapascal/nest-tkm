@@ -27,7 +27,7 @@ describe('Application e2e Testing', () => {
     await app.close();
   }, 0);
 
-  describe('/auth/register', () => {
+  describe('api/auth/register', () => {
     it('user success registered', () => {
       return request(app.getHttpServer())
         .post('/auth/register')
@@ -53,7 +53,7 @@ describe('Application e2e Testing', () => {
     });
   });
 
-  describe('/auth/login', () => {
+  describe('api/auth/login', () => {
     it('user success logged in', async () => {
       const response = await request(app.getHttpServer())
         .post('/auth/login')
@@ -88,7 +88,7 @@ describe('Application e2e Testing', () => {
     });
   });
 
-  describe('/auth/refresh', () => {
+  describe('api/auth/refresh', () => {
     it('user can refresh token', () => {
       return request(app.getHttpServer())
         .patch('/auth/refresh')
@@ -107,7 +107,7 @@ describe('Application e2e Testing', () => {
     });
   });
 
-  describe('/auth/logout', () => {
+  describe('api/auth/logout', () => {
     it('user can logged out', () => {
       return request(app.getHttpServer())
         .patch('/auth/logout')

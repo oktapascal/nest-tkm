@@ -1,3 +1,3 @@
-GET http://localhost:3001/auth/whoami
+GET http://localhost:3001/api/auth/whoami
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlM2IxOTNkNy03NjE0LTQ0YTYtYjMzZS1hNDFiZWI5YTk4OGQiLCJpYXQiOjE2OTI5MzA4OTcsImV4cCI6MTY5MjkzMTc5N30.iuqJw2L-s6riRNJFVmozw1oK0o0UFJlt0BTWv9Ab4IA
