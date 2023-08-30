@@ -8,7 +8,11 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_PIPE } from '@nestjs/core';
-import { RequestLoggerMiddleware } from './common/middlewares';
+import {
+  RequestLoggerMiddleware,
+  SessionCookieAccessMiddleware,
+  SessionCookieRefreshMiddleware,
+} from './common/middlewares';
 import { UsersModule } from './users/users.module';
 import { PgConfig } from './common/configs/database';
 
@@ -42,6 +46,10 @@ import { PgConfig } from './common/configs/database';
 export class AppModule {
   // noinspection JSUnusedGlobalSymbols
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(SessionCookieAccessMiddleware, RequestLoggerMiddleware)
+      .exclude('auth/refresh')
+      .forRoutes('*');
+    consumer.apply(SessionCookieRefreshMiddleware).forRoutes('auth/refresh');
   }
 }
