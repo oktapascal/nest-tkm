@@ -5,6 +5,9 @@ import { WinstonModule } from 'nest-winston';
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 
+// noinspection ES6ConvertRequireIntoImport
+const CookieSession = require('cookie-session');
+
 async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
@@ -45,7 +48,14 @@ async function bootstrap() {
     origin: ['http://localhost:5173'],
     methods: ['POST', 'GET', 'PATCH', 'DELETE'],
   });
+
   app.setGlobalPrefix('api');
+
+  app.use(
+    CookieSession({
+      keys: ['M0geIzGFDTgz'],
+    }),
+  );
 
   await app.listen(3000);
 }
