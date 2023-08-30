@@ -41,10 +41,13 @@ async function bootstrap() {
     }),
   });
 
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:5173'],
+    methods: ['POST', 'GET', 'PATCH', 'DELETE'],
+  });
   app.setGlobalPrefix('api');
 
-  await app.listen(3001);
+  await app.listen(3000);
 }
 // noinspection JSIgnoredPromiseFromCall
 bootstrap();
