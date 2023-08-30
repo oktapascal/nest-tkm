@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Session,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, UserDto } from './dto';
@@ -53,10 +54,11 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Public()
-  login(
+  async login(
     @Body() request: LoginDto,
     @Ip() ip_address: string,
     @UserAgent() user_agent: string | undefined,
+    @Session() session: any,
   ): Promise<Tokens> {
     const req: SessionUserRequest = {
       ...request,
@@ -64,26 +66,38 @@ export class AuthController {
       agent: user_agent,
     };
 
-    return this.authService.handleLogin(req);
+    const result = await this.authService.handleLogin(req);
+
+    session.access_token = result.access_token;
+    session.refresh_token = result.refresh_token;
+
+    return { ...result };
   }
 
   @Patch('refresh')
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   @Public()
-  refresh(@CurrentUser() user: Express.User): Promise<Tokens> {
+  async refresh(
+    @CurrentUser() user: Express.User,
+    @Session() session: any,
+  ): Promise<Tokens> {
     const req: RefreshTokenRequest = {
       user_id: user['sub'],
       token: user['refresh_token'],
     };
 
-    return this.authService.handleRefreshToken(req);
+    const result = await this.authService.handleRefreshToken(req);
+
+    session.access_token = result.access_token;
+    session.refresh_token = result.refresh_token;
+
+    return { ...result };
   }
 
   @Patch('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@CurrentUser() user: Express.User): Promise<JsonResponse> {
-    console.log(user);
     await this.authService.handleLogout(user['sub']);
 
     return {
