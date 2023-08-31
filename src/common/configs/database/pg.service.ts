@@ -4,7 +4,7 @@ import {
 } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { AuthSession, User, UserProfile } from '../../../users/models/entities';
+import { AuthSession, User, UserProfile } from '../../../users/entities';
 
 export const PgConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],

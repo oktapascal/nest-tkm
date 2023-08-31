@@ -21,19 +21,19 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ select: true })
+  @Column()
   role: string;
 
   @Column()
   activated: boolean;
 
-  @Column({ select: true })
+  @Column({ nullable: true })
   created_at: string;
 
-  @Column()
+  @Column({ nullable: true })
   updated_at: Date;
 
-  @Column()
+  @Column({ nullable: true })
   remember_token: string;
 
   @OneToOne(() => UserProfile, (profile) => profile.user)
