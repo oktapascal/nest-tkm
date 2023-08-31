@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
 import { Roles } from '../../common/enums';
 
-export class CreateUserDto {
+export class RegisterRequest {
   @IsNotEmpty({ message: 'Username wajib diisi' })
   @MaxLength(25, { message: 'Username maksimal $constraint1 karakter' })
   username: string;

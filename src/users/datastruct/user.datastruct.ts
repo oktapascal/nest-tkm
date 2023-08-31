@@ -1,4 +1,4 @@
-export interface UserCreateRequest {
+export interface UserDatastruct {
   username: string;
   password: string;
   role: string;

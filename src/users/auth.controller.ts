@@ -9,28 +9,23 @@ import {
   Post,
   UseGuards,
   Session,
+  Inject,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto, UserDto } from './dto';
-import {
-  RefreshTokenRequest,
-  SessionUserRequest,
-  Tokens,
-  UserCreateRequest,
-} from './models/web';
+import { AUTH_SERVICES, AuthServices } from './auth.services';
 import { JsonResponse } from '../common/web';
 import { Public } from '../common/decorators';
-import { LoginDto } from './dto/login.dto';
 import { CurrentUser, UserAgent } from './decorators';
-import { Serialize } from '../common/interceptors/serialize.interceptor';
 import { RefreshTokenGuard } from '../common/guards';
+import { LoginRequest, RefreshTokenRequest, RegisterRequest } from './request';
+import { Tokens } from './web';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    @Inject(AUTH_SERVICES) private readonly authService: AuthServices,
+  ) {}
 
   @Get('/whoami')
-  @Serialize(UserDto)
   whoami(@CurrentUser() user: Express.User) {
     return user['sub'];
   }
@@ -38,12 +33,8 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @Public()
-  async register(@Body() request: CreateUserDto): Promise<JsonResponse> {
-    const req: UserCreateRequest = {
-      ...request,
-    };
-
-    await this.authService.handleRegister(req);
+  async register(@Body() request: RegisterRequest): Promise<JsonResponse> {
+    await this.authService.SignUp(request);
 
     return {
       code: HttpStatus.CREATED,
@@ -55,23 +46,21 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Public()
   async login(
-    @Body() request: LoginDto,
+    @Body() request: LoginRequest,
     @Ip() ip_address: string,
     @UserAgent() user_agent: string | undefined,
     @Session() session: any,
   ): Promise<Tokens> {
-    const req: SessionUserRequest = {
-      ...request,
-      ip: ip_address,
-      agent: user_agent,
-    };
+    request.ip_address = ip_address;
+    request.user_agent = user_agent;
 
-    const result = await this.authService.handleLogin(req);
+    const [access_token, refresh_token] =
+      await this.authService.SignIn(request);
 
-    session.access_token = result.access_token;
-    session.refresh_token = result.refresh_token;
+    session.access_token = access_token;
+    session.refresh_token = refresh_token;
 
-    return { ...result };
+    return { access_token, refresh_token };
   }
 
   @Patch('refresh')
@@ -82,23 +71,23 @@ export class AuthController {
     @CurrentUser() user: Express.User,
     @Session() session: any,
   ): Promise<Tokens> {
-    const req: RefreshTokenRequest = {
-      user_id: user['sub'],
-      token: user['refresh_token'],
-    };
+    const request = new RefreshTokenRequest();
+    request.user_id = user['sub'];
+    request.token = user['refresh_token'];
 
-    const result = await this.authService.handleRefreshToken(req);
+    const [access_token, refresh_token] =
+      await this.authService.RefreshToken(request);
 
-    session.access_token = result.access_token;
-    session.refresh_token = result.refresh_token;
+    session.access_token = access_token;
+    session.refresh_token = refresh_token;
 
-    return { ...result };
+    return { access_token, refresh_token };
   }
 
   @Patch('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@CurrentUser() user: Express.User): Promise<JsonResponse> {
-    await this.authService.handleLogout(user['sub']);
+    await this.authService.SignOut(user['sub']);
 
     return {
       code: HttpStatus.OK,

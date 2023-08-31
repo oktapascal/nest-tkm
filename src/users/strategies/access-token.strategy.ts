@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from '../models/web';
+import { JwtPayload } from '../web';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
