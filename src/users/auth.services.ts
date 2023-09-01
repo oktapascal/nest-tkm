@@ -19,7 +19,6 @@ import {
   TOKEN_MANAGER_SERVICES,
   TokenManagerServices,
 } from './token-manager.services';
-import { plainToInstance } from 'class-transformer';
 import { AuthDto } from './dto';
 
 export const AUTH_SERVICES = 'AuthServices';
@@ -95,7 +94,11 @@ export class AuthServiceImpl implements AuthServices {
 
     await this.userServices.UpdateRefreshToken(user.id_user, refreshToken);
 
-    const dto = plainToInstance(AuthDto, auth);
+    const dto = new AuthDto();
+    dto.user_agent = auth.user_agent;
+    dto.ip_address = auth.ip_address;
+    dto.user_id = user.id_user;
+
     await this.authRepositories.CreateAuthSession(dto);
 
     return [accessToken, refreshToken];
@@ -117,10 +120,10 @@ export class AuthServiceImpl implements AuthServices {
       ]);
 
     const request = new CreateUserRequest();
-    request.name = auth.name;
     request.username = auth.username;
-    request.role = auth.role;
     request.password = auth.password;
+    request.name = auth.name;
+    request.role = auth.role;
 
     return this.userServices.SaveUser(request);
   }

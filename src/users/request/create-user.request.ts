@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 import { Roles } from '../../common/enums';
 
 export class CreateUserRequest {
@@ -17,4 +17,11 @@ export class CreateUserRequest {
   @IsNotEmpty({ message: 'Nama lengkap wajib diisi' })
   @MaxLength(100, { message: 'Nama lengkap maksimal $constraint1 karakter' })
   name: string;
+
+  @IsOptional()
+  email: string;
+
+  @IsOptional()
+  @MaxLength(14, { message: 'Nomor telepon maksimal $constraint1 karakter' })
+  phone_number: string;
 }
