@@ -1,11 +1,45 @@
-export class UserDto {
-  id?: number;
-  id_user?: string;
-  username: string;
-  password: string;
-  role: string;
+import { Expose, Type } from 'class-transformer';
+
+export class UserProfileDto {
+  user_id?: string;
+
+  @Expose()
   name: string;
-  remember_token?: string;
-  activated?: boolean;
+
+  @Expose()
+  email?: string;
+
+  @Expose()
+  phone_number?: string;
+
+  @Expose()
+  photo?: string;
+
   updated_at?: Date;
+}
+
+export class UserDto {
+  @Expose()
+  id?: number;
+
+  @Expose()
+  id_user?: string;
+
+  @Expose()
+  username: string;
+
+  password: string;
+
+  @Expose()
+  role: string;
+
+  remember_token?: string;
+
+  @Expose()
+  activated?: boolean;
+
+  updated_at?: Date;
+
+  @Type(() => UserProfileDto)
+  profile: UserProfileDto;
 }

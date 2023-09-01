@@ -2,21 +2,21 @@ import { User, UserProfile } from './entities';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UserDto } from './dto';
+import { UserDto, UserProfileDto } from './dto';
 
 export const USERS_REPOSITORIES = 'UsersRepositories';
 
 export interface UsersRepositories {
   GetUserByUsername(username: string): Promise<User>;
   GetUserById(user_id: string): Promise<User>;
-  CreateUser(user: UserDto): Promise<void>;
+  CreateUser(user: UserDto, profile: UserProfileDto): Promise<void>;
   UpdateRefreshToken(user_id: string, token?: string): Promise<void>;
 }
 
 @Injectable()
 export class UsersRepositoriesImpl implements UsersRepositories {
   constructor(@InjectDataSource() private readonly datasource: DataSource) {}
-  CreateUser(user: UserDto): Promise<void> {
+  CreateUser(user: UserDto, profile: UserProfileDto): Promise<void> {
     const manager = this.datasource.createEntityManager();
 
     return this.datasource.transaction(async (trx) => {
@@ -30,7 +30,7 @@ export class UsersRepositoriesImpl implements UsersRepositories {
 
       const createProfile = manager.create(UserProfile, {
         user_id: _user.id_user,
-        name: user.name,
+        name: profile.name,
       });
 
       await trx.save(createProfile);
