@@ -33,13 +33,12 @@ export class UserDto {
   @Expose()
   role: string;
 
-  remember_token?: string;
-
   @Expose()
   activated?: boolean;
 
   updated_at?: Date;
 
+  @Expose()
   @Type(() => UserProfileDto)
   profile: UserProfileDto;
 }
