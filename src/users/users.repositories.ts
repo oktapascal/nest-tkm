@@ -40,7 +40,8 @@ export class UsersRepositoriesImpl implements UsersRepositories {
   GetUserById(user_id: string): Promise<User> {
     return this.datasource
       .getRepository(User)
-      .createQueryBuilder()
+      .createQueryBuilder('users')
+      .innerJoinAndSelect('users.profile', 'profile')
       .where('id_user = :user_id', { user_id })
       .andWhere('activated = true')
       .getOne();
@@ -49,7 +50,8 @@ export class UsersRepositoriesImpl implements UsersRepositories {
   GetUserByUsername(username: string): Promise<User> {
     return this.datasource
       .getRepository(User)
-      .createQueryBuilder()
+      .createQueryBuilder('users')
+      .innerJoinAndSelect('users.profile', 'profile')
       .where('username = :username', { username })
       .andWhere('activated = true')
       .getOne();

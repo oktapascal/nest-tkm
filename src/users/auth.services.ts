@@ -20,6 +20,7 @@ import {
   TokenManagerServices,
 } from './token-manager.services';
 import { AuthDto } from './dto';
+import { User } from './entities';
 
 export const AUTH_SERVICES = 'AuthServices';
 
@@ -28,6 +29,7 @@ export interface AuthServices {
   SignUp(auth: RegisterRequest): Promise<void>;
   SignIn(auth: LoginRequest): Promise<string[]>;
   SignOut(user_id: string): Promise<void>;
+  GetCredentialData(user_id: string): Promise<User>;
 }
 
 @Injectable()
@@ -126,5 +128,9 @@ export class AuthServiceImpl implements AuthServices {
     request.role = auth.role;
 
     return this.userServices.SaveUser(request);
+  }
+
+  GetCredentialData(user_id: string): Promise<User> {
+    return this.userServices.GetUserById(user_id);
   }
 }

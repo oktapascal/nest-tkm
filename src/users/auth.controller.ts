@@ -18,6 +18,8 @@ import { CurrentUser, UserAgent } from './decorators';
 import { RefreshTokenGuard } from '../common/guards';
 import { LoginRequest, RefreshTokenRequest, RegisterRequest } from './request';
 import { Tokens } from './web';
+import { Serialize } from '../common/interceptors';
+import { UserDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,8 +28,9 @@ export class AuthController {
   ) {}
 
   @Get('/whoami')
+  @Serialize(UserDto)
   whoami(@CurrentUser() user: Express.User) {
-    return user['sub'];
+    return this.authService.GetCredentialData(user['sub']);
   }
 
   @Post('register')
